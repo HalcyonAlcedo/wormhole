@@ -227,7 +227,7 @@ const getClientWeb = async (request, reply) => {
 
 // web代理访问
 fastify.get('/web/:clientId/*', getClientWeb)
-server.get('/', (request, reply) => {
+fastify.get('/', (request, reply) => {
     reply.type('wormhole server')
 })
 const start = async () => {
