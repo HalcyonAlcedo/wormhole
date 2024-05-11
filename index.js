@@ -151,15 +151,27 @@ const getClientWeb = async (request, reply) => {
                         webManager.clearData(clientId, path)
                         if (fileBuffer) {
                             let text = fileBuffer.toString('utf8')
-                            switch (pathObj.ext) {
+                            switch (message.ext || pathObj.ext) {
                                 case '.woff':
                                     ret({ type: 'application/font-woff', data: fileBuffer, code: 200 })
+                                    break
+                                case '.woff2':
+                                    ret({ type: 'application/font-woff2', data: fileBuffer, code: 200 })
                                     break
                                 case '.jpg':
                                     ret({ type: 'image/jpeg', data: fileBuffer, code: 200 })
                                     break
+                                case '.jpeg':
+                                    ret({ type: 'image/jpeg', data: fileBuffer, code: 200 })
+                                    break
                                 case '.png':
                                     ret({ type: 'image/png', data: fileBuffer, code: 200 })
+                                    break
+                                case '.bmp':
+                                    ret({ type: 'image/bmp', data: fileBuffer, code: 200 })
+                                    break
+                                case '.ico':
+                                    ret({ type: 'image/ico', data: fileBuffer, code: 200 })
                                     break
                                 case '.webp':
                                     ret({ type: 'image/webp', data: fileBuffer, code: 200 })
@@ -219,7 +231,7 @@ fastify.get('/', (request, reply) => {
 })
 const start = async () => {
     try {
-        await fastify.listen({ port: 3000, host: '::'})
+        await fastify.listen({ port: 3000, host: '::' })
         console.log('wormhole服务已启动')
     } catch (err) {
         fastify.log.error(err)

@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 import fs from 'fs';
 
-const wsUrl = 'ws://localhost:3000/ws';
+const wsUrl = 'ws://localhost:3000/ws/';
 let ws;
 let reConnect;
 
