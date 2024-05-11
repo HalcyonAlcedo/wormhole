@@ -1,0 +1,19 @@
+{
+  "name": "wormhole",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "app": "node index.js",
+    "start": "pm2 start pm2.json",
+    "stop": "pm2 stop pm2.json"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@fastify/websocket": "^10.0.1",
+    "fastify": "^4.27.0",
+    "ws": "^8.17.0"
+  }
+}
