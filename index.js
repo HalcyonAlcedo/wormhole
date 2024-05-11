@@ -201,8 +201,7 @@ const getClientWeb = async (request, reply) => {
                     }
                 }
                 if (message.type === 'web' && message.path === path && message.command === 'redirect' && message.target) {
-                    client.removeListener('message', messageHandler)
-                    reply.redirect(301, `web/${clientId}/${message.target}`);
+                    ret({ code: 301, target: `web/${clientId}/${message.target}` })
                 }
             }
             client.on('message', messageHandler)
@@ -219,7 +218,11 @@ const getClientWeb = async (request, reply) => {
         // 等待WebSocket客户端返回数据
         try {
             const data = await waitForWsResponse
-            reply.code(data.code).type(data.type).send(data.data) // 发送数据作为HTTP响应
+            if (data.code === 301 || data.code === 302) {
+                reply.redirect(data.code, data.target);
+            } else {
+                reply.code(data.code).type(data.type).send(data.data) // 发送数据作为HTTP响应
+            }
         } catch (err) {
             reply.code(500).send({ error: err.message }) // 发送错误响应
         }
