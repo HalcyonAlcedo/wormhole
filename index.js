@@ -200,6 +200,10 @@ const getClientWeb = async (request, reply) => {
                         reject(new Error(`Get File Error \n\n${error.message}`))
                     }
                 }
+                if (message.type === 'redirect' && message.path === path && message.target) {
+                    client.removeListener('message', messageHandler)
+                    reply.redirect(301, `web/${clientId}/${message.target}`);
+                }
             }
             client.on('message', messageHandler)
             // 设置超时
