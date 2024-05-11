@@ -91,7 +91,7 @@ class WebDataStore {
 const webManager = new WebDataStore()
 const clientManager = new ClientManager()
 
-const fastify = Fastify({ logger: true })
+const fastify = Fastify({ logger: false })
 await fastify.register(websocketPlugin)
 
 fastify.get('/ws', { websocket: true }, (connection, req) => {
@@ -209,7 +209,7 @@ const getClientWeb = async (request, reply) => {
                 reject(new Error('Get File Time Out')) // 拒绝Promise并返回错误
             }, 180000) // 3分钟
         } else {
-            ret({ type: 'text/html', data: 'Client not found', code: 403 })
+            resolve({ type: 'text/html', data: 'Client not found', code: 403 })
         }
     })
     try {
