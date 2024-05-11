@@ -201,7 +201,7 @@ const getClientWeb = async (request, reply) => {
                     }
                 }
                 if (message.type === 'web' && message.path === path && message.command === 'redirect' && message.target) {
-                    ret({ code: 301, target: `web/${clientId}/${message.target}` })
+                    ret({ code: 301, target: `/web/${clientId}/${message.target}` })
                 }
             }
             client.on('message', messageHandler)
