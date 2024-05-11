@@ -94,9 +94,9 @@ const clientManager = new ClientManager()
 const fastify = Fastify({ logger: false })
 await fastify.register(websocketPlugin)
 
-fastify.get('/ws', { websocket: true }, (connection, req) => {
+fastify.get('/ws/:clientId', { websocket: true }, (connection, req) => {
     const socket = connection
-    const id = new Date().getTime() // 使用时间戳作为客户端ID
+    const id = parseInt(req.params.clientId) || new Date().getTime()
     clientManager.addClient(socket, id)
 
     socket.send(JSON.stringify({ type: 'msg', date: `Hello ${id}, this is the media server.`, client: id }))
