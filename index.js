@@ -163,7 +163,6 @@ const getClientWeb = async (request, reply) => {
                         webManager.clearData(clientId, path)
                         if (fileBuffer) {
                             let text = fileBuffer.toString('utf8')
-                            text = text.replace(/..\/..\/..\/..\/..\//g, `../../../../../web/${clientId}/`)
                             switch (pathObj.ext) {
                                 case '.woff':
                                     ret({ type: 'application/font-woff', data: fileBuffer, code: 200 })
@@ -178,6 +177,7 @@ const getClientWeb = async (request, reply) => {
                                     ret({ type: 'image/webp', data: fileBuffer, code: 200 })
                                     break
                                 case '.html':
+                                    console.log(text)
                                     ret({ type: 'text/html', data: text, code: 200 })
                                     break
                                 case '.css':
