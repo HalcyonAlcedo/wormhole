@@ -34,5 +34,6 @@ Wormhole 是一个基于 Fastify 和 WebSocket 的数据传输项目，旨在实
    修改`Karin/config/config/config.yaml`文件
    - 将`http_render.enable`改为true
    - 将`http_render.host`改为Wormhole的web地址，例如Wormhole部署在 127.0.0.1:3000 这里就填 http://127.0.0.1:3000/web/123456，其中123456为客户端id，建议改为机器人的qq号以保证客户端唯一性
+   - WebSocket传输非文本数据时间可能较长，如果出现获取图片超时的情况可以尝试将`http_render.timeout`适当增加
 
 注意：为安全考虑，Karin插件仅代理静态资源`css,html,ttf,jpg,jpeg,png,gif,bmp,ico,woff,woff2`
