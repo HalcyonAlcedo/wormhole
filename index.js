@@ -106,19 +106,6 @@ fastify.get('/ws/:clientId', { websocket: true }, (connection, req) => {
         } catch (error) {
             console.warn(`${id}:非法消息${message}`)
         }
-        switch (message.type) {
-            case 'web':
-                // 如果是文件片段
-                if (message.state === 'part' || message.state === 'complete') {
-                    // 将base64字符串转换回Buffer并存储
-                    webManager.storeData(id, message.path, message.message, message.state)
-                } else if (message.state === 'error') {
-                    console.warn(`${id}:${message.error}`)
-                }
-                break
-            default:
-                break
-        }
     })
 
     socket.on('close', () => {
