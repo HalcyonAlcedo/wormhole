@@ -177,7 +177,6 @@ const getClientWeb = async (request, reply) => {
                                     ret({ type: 'image/webp', data: fileBuffer, code: 200 })
                                     break
                                 case '.html':
-                                    console.log(text)
                                     ret({ type: 'text/html', data: text, code: 200 })
                                     break
                                 case '.css':
