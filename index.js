@@ -124,13 +124,14 @@ const getClientWeb = async (request, reply) => {
     const clientId = parseInt(request.params.clientId)
     const pathObj = parse(request.params['*'])
     const path = `${pathObj.dir}${pathObj.dir ? '/' : ''}${pathObj.base}` // 获取路径部分
+    const queryParams = request.query
     console.log(`${clientId}请求资源:${path}`)
     // 创建一个新的Promise来等待WebSocket客户端的响应
     const waitForWsResponse = new Promise((resolve, reject) => {
         const client = clientManager.getClient(clientId)
         if (client) {
             webManager.initDataStore(clientId)
-            client.send(JSON.stringify({ type: 'web', path, command: 'get' }))
+            client.send(JSON.stringify({ type: 'web', path, query: queryParams, command: 'get' }))
             // 设置事件监听器来处理WebSocket客户端返回的消息
             const messageHandler = message => {
                 const ret = data => {
