@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "media",
+      "name": "wormhole",
       "script": "./index.js",
       "env": {
         "NODE_ENV": "development"
