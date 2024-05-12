@@ -1,23 +1,23 @@
-import WebSocket from 'ws';
-import fs from 'fs';
+import WebSocket from 'ws'
+import fs from 'fs'
 
-const wsUrl = 'ws://localhost:3000/ws/';
-let ws;
-let reConnect;
+const wsUrl = 'ws://localhost:3000/ws/'
+let ws
+let reConnect
 
-const chunkSize = 1024 * 1024 * 3; //文件分片大小
+const chunkSize = 1024 * 1024 * 3 //文件分片大小
 
 function connect() {
     let heartbeat
-    reConnect = undefined;
-    ws = new WebSocket(wsUrl);
+    reConnect = undefined
+    ws = new WebSocket(wsUrl)
     ws.on('open', function open() {
-        console.log('连接到服务器');
+        console.log('连接到服务器')
         // 发送心跳
         heartbeat = setInterval(() => {
-            ws.send(JSON.stringify({ type: 'heartbeat', date: new Date() }));
-        }, 30000); // 每30秒发送一次心跳
-    });
+            ws.send(JSON.stringify({ type: 'heartbeat', date: new Date() }))
+        }, 30000) // 每30秒发送一次心跳
+    })
 
     ws.on('message', function incoming(data) {
         try {
@@ -32,11 +32,11 @@ function connect() {
                     console.log(`获取网页文件数据:${path}`)
                     // 获取文件
 
-                    const stream = fs.createReadStream(path, { highWaterMark: chunkSize });
-                    let part = 0;
+                    const stream = fs.createReadStream(path, { highWaterMark: chunkSize })
+                    let part = 0
 
                     stream.on('data', (chunk) => {
-                        part++;
+                        part++
                         let message = {
                             type: 'web',
                             path: path,
@@ -44,13 +44,13 @@ function connect() {
                             data: chunk.toString('base64'),
                             state: 'part',
                             part: part
-                        };
+                        }
 
-                        ws.send(JSON.stringify(message));
-                    });
+                        ws.send(JSON.stringify(message))
+                    })
 
                     stream.on('end', (chunk) => {
-                        part++;
+                        part++
                         // 如果是最后一片段，则更新状态为 'complete'
                         if (stream.readableEnded) {
                             ws.send(JSON.stringify({
@@ -60,45 +60,45 @@ function connect() {
                                 data: '',
                                 state: 'complete',
                                 part: part
-                            }));
+                            }))
                         }
-                    });
+                    })
 
                     stream.on('error', (err) => {
-                        ws.send(JSON.stringify({ type: 'web', state: 'error', error: err.message }));
-                    });
+                        ws.send(JSON.stringify({ type: 'web', state: 'error', error: err.message }))
+                    })
                 } else {
-                    ws.send(JSON.stringify({ type: 'web', state: 'error', error: '错误的文件路径' }));
+                    ws.send(JSON.stringify({ type: 'web', state: 'error', error: '错误的文件路径' }))
                 }
-                break;
+                break
             default:
-                break;
+                break
         }
-        console.log('收到消息：', data);
-    });
+        console.log('收到消息：', data)
+    })
 
     ws.on('close', function close() {
         if (heartbeat) {
             clearInterval(heartbeat)
             heartbeat = null
         }
-        console.log('连接关闭，1分钟后尝试重新连接');
+        console.log('连接关闭，1分钟后尝试重新连接')
         if (!reConnect) {
-            reConnect = setTimeout(connect, 60000); // 1分钟后重试连接
+            reConnect = setTimeout(connect, 60000) // 1分钟后重试连接
         }
-    });
+    })
 
     ws.on('error', function error() {
         if (heartbeat) {
             clearInterval(heartbeat)
             heartbeat = null
         }
-        console.log('连接错误，1分钟后尝试重新连接');
+        console.log('连接错误，1分钟后尝试重新连接')
         if (!reConnect) {
-            reConnect = setTimeout(connect, 60000); // 1分钟后重试连接
+            reConnect = setTimeout(connect, 60000) // 1分钟后重试连接
         }
-    });
+    })
 
 }
 
-connect(); // 初始化连接
+connect() // 初始化连接

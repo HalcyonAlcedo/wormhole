@@ -1,1 +1,46 @@
+# 日志
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 运行时数据
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# 目录依赖项
 node_modules
+jspm_packages
+
+# 生产环境配置文件
+.env
+
+# OSX文件系统
+.DS_Store
+
+# Windows文件系统
+Thumbs.db
+ehthumbs.db
+
+# Linux文件系统
+.directory
+
+# IntelliJ项目文件
+.idea
+*.iml
+
+# VSCode项目文件
+.vscode
+
+# npm错误日志
+npm-debug.log
+
+# 临时文件
+*.tmp
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
