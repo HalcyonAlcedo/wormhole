@@ -1,6 +1,6 @@
 {
   "name": "wormhole",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "type": "module",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "start": "pm2 start pm2.json",
     "stop": "pm2 stop pm2.json"
   },
-  "author": "",
+  "author": "Alcedo",
   "license": "MIT",
   "dependencies": {
     "@fastify/websocket": "^10.0.1",
