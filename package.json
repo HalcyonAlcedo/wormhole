@@ -14,6 +14,7 @@
   "dependencies": {
     "@fastify/websocket": "^10.0.1",
     "fastify": "^4.27.0",
+    "minimist": "^1.2.8",
     "ws": "^8.17.0"
   }
 }

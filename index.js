@@ -1,6 +1,9 @@
 import Fastify from 'fastify'
 import websocketPlugin from '@fastify/websocket'
+import minimist  from 'minimist'
 import { parse } from 'path'
+
+const args = minimist(process.argv.slice(2))
 
 // 客户管理类
 class ClientManager {
@@ -257,8 +260,8 @@ fastify.get('/', (request, reply) => {
 })
 const start = async () => {
     try {
-        await fastify.listen({ port: 3000, host: '::' })
-        console.log('wormhole服务已启动')
+        await fastify.listen({ port: args['name'] || 3000, host: '::' })
+        console.log(`wormhole服务已启动，端口:${args['name'] || 3000}`)
     } catch (err) {
         fastify.log.error(err)
         process.exit(1)
