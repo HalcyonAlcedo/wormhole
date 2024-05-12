@@ -2,8 +2,10 @@
 // 导入Fastify和WebSocket插件
 import Fastify from 'fastify'
 import websocketPlugin from '@fastify/websocket'
+
 import websocketRoutes from './routes/websocket.js'
 import webRoutes from './routes/web.js'
+import homeRoutes from './routes/home.js'
 
 // 导出一个函数，该函数接收ClientManager和WebDataStore实例
 export default async function server(options) {
@@ -16,6 +18,7 @@ export default async function server(options) {
   // 注册路由
   await fastify.register(websocketRoutes, { prefix: '/ws', options })
   await fastify.register(webRoutes, { prefix: '/web', options })
+  await fastify.register(homeRoutes)
 
   // 返回Fastify实例
   return fastify
