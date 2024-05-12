@@ -56,7 +56,21 @@ class WebDataStore {
         if (clientStore?.has(path)) {
             const store = clientStore.get(path)
             if (store.state === 'complete') {
-                return Buffer.concat(store.data.map(segment => Buffer.from(segment, 'base64')))
+                return Buffer.concat(store.data.map(segment => {
+                    // 如果segment是字符串，则假定它是base64编码的，并进行解码
+                    if (typeof segment === 'string') {
+                        return Buffer.from(segment, 'base64')
+                    }
+                    // 如果segment是Buffer或Uint8Array，则直接使用
+                    else if (segment.type === 'Buffer' || segment.type === 'Uint8Array') {
+                        return Buffer.from(segment.data)
+                    }
+                    // 如果数据类型未知，则记录错误并返回空Buffer
+                    else {
+                        console.error('未知的数据类型:', segment.type)
+                        return Buffer.alloc(0)
+                    }
+                }))
             }
         }
         return null
@@ -203,13 +217,18 @@ const getClientWeb = async (request, reply) => {
                 if (message.type === 'web' && message.path === path && message.command === 'redirect' && message.target) {
                     ret({ code: 301, target: `/web/${clientId}/${message.target}` })
                 }
+                if (message.state === 'error') {
+                    webManager.clearData(clientId, path)
+                    client.removeListener('message', messageHandler)
+                    reject(new Error(`Get File Error \n\n${message.error}`))
+                }
             }
             client.on('message', messageHandler)
             // 设置超时
             setTimeout(() => {
                 client.removeListener('message', messageHandler)
                 reject(new Error('Get File Time Out')) // 拒绝Promise并返回错误
-            }, 180000) // 3分钟
+            }, 60000) // 1分钟
         } else {
             resolve({ type: 'text/html', data: 'Client not found', code: 403 })
         }

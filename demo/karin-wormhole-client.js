@@ -40,7 +40,6 @@ function connect() {
                     if (query.html) {
                         ws.send(JSON.stringify({ type: 'web', command: 'redirect', path: filePath,target: query.html.startsWith('/') ? query.html.slice(1) : query.html }));
                         return
-                        // filePath = query.html.startsWith('/') ? query.html.slice(1) : query.html
                     }
                     const list = ['.css', '.html', '.ttf', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.ico', '.woff', '.woff2']
                     if (!list.some(ext => path.extname(filePath).endsWith(ext))) {
@@ -60,8 +59,7 @@ function connect() {
                             type: 'web',
                             path: data.path,
                             command: 'resource',
-                            data: chunk.toString('base64'),
-                            // ext: path.extname(filePath),
+                            data: chunk,
                             state: 'part',
                             part: part
                         };
@@ -78,7 +76,6 @@ function connect() {
                                 path: data.path,
                                 command: 'resource',
                                 data: '',
-                                // ext: path.extname(filePath),
                                 state: 'complete',
                                 part: part
                             }));
