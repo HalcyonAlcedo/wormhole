@@ -2,6 +2,7 @@
 // 导入Fastify和WebSocket插件
 import Fastify from 'fastify'
 import websocketPlugin from '@fastify/websocket'
+import cors from '@fastify/cors'
 
 import websocketRoutes from './routes/websocket.js'
 import webRoutes from './routes/web.js'
@@ -14,6 +15,12 @@ export default async function server(options) {
 
   // 注册WebSocket插件
   await fastify.register(websocketPlugin)
+
+  // 配置跨域请求
+  await fastify.register(cors, {
+    origin: '*',
+    methods: ['GET', 'POST']
+  });
   
   // 注册路由
   await fastify.register(websocketRoutes, { prefix: '/ws', options })
