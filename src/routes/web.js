@@ -11,12 +11,13 @@ export default async function webRoutes(fastify, options) {
     const clientId = parseInt(request.params.clientId)
     const path = request.params['*']
     const queryParams = request.query
+    const headersParams = request.headers
 
     console.log(`客户端${clientId}请求资源:`, path)
 
     try {
       // 创建一个新的Promise来等待WebSocket客户端的响应
-      const data = await getWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams)
+      const data = await getWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams, headersParams)
       if (data.code === 301 || data.code === 302) {
         reply.redirect(data.code, data.target)
       } else {
@@ -33,12 +34,12 @@ export default async function webRoutes(fastify, options) {
     const path = request.params['*']
     const queryParams = request.query
     const bodyParams = request.body
-
+    const headersParams = request.headers
     console.log(`客户端${clientId}请求数据:`, path)
 
     try {
       // 创建一个新的Promise来等待WebSocket客户端的响应
-      const data = await postWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams, bodyParams)
+      const data = await postWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams, bodyParams, headersParams)
       if (data.code === 301 || data.code === 302) {
         reply.redirect(data.code, data.target)
       } else {
@@ -50,14 +51,14 @@ export default async function webRoutes(fastify, options) {
   })
 
   // 定义waitForWsResponse函数来处理WebSocket响应
-  async function getWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams) {
+  async function getWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams, headersParams) {
     const pathObj = parse(path)
     path = `${pathObj.dir}${pathObj.dir ? '/' : ''}${pathObj.base}`
     return new Promise((resolve, reject) => {
       const client = clientManager.getClient(clientId)
       if (client) {
         webDataStore.initDataStore(clientId)
-        client.send(JSON.stringify({ type: 'web', path, query: queryParams, command: 'get' }))
+        client.send(JSON.stringify({ type: 'web', path, query: queryParams, headers: headersParams, command: 'get' }))
         // 设置事件监听器来处理WebSocket客户端返回的消息
         const messageHandler = message => {
           const ret = data => {
@@ -146,14 +147,14 @@ export default async function webRoutes(fastify, options) {
       }
     })
   }
-  async function postWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams, bodyParams) {
+  async function postWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams, bodyParams, headersParams) {
     const pathObj = parse(path)
     path = `${pathObj.dir}${pathObj.dir ? '/' : ''}${pathObj.base}`
     return new Promise((resolve, reject) => {
       const client = clientManager.getClient(clientId)
       if (client) {
         webDataStore.initDataStore(clientId)
-        client.send(JSON.stringify({ type: 'web', path, query: queryParams, body: bodyParams, command: 'post' }))
+        client.send(JSON.stringify({ type: 'web', path, query: queryParams, body: bodyParams, headers: headersParams, command: 'post' }))
         // 设置事件监听器来处理WebSocket客户端返回的消息
         const messageHandler = message => {
           const ret = data => {
