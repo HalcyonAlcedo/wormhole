@@ -11,23 +11,12 @@ function maskString(str) {
   }
 }
 function formatDuration(duration)  {
-    // 将毫秒转换为秒
-    let seconds = Math.floor(duration / 1000);
-    // 计算小时数
-    let hours = Math.floor(seconds / 3600);
-    seconds -= hours * 3600;
-    // 计算分钟数
-    let minutes = Math.floor(seconds / 60);
-    seconds -= minutes * 60;
-  
     // 使用Intl.DateTimeFormat格式化
     const formatter = new Intl.DateTimeFormat('cn', {
       hour: 'numeric', minute: 'numeric', second: 'numeric',
       hour12: false, timeZone: 'UTC'
     });
-  
-    // 创建一个UTC时间，以便我们可以使用formatter来格式化
-    const date = new Date(Date.UTC(1970, 0, 1, hours, minutes, seconds));
+    const date = new Date(duration);
   
     // 返回格式化的时间字符串
     return formatter.format(date);
