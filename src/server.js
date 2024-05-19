@@ -7,6 +7,8 @@ import cors from '@fastify/cors'
 import websocketRoutes from './routes/websocket.js'
 import webRoutes from './routes/web.js'
 import homeRoutes from './routes/home.js'
+import clientRoutes from './routes/client.js'
+
 
 // 导出一个函数，该函数接收ClientManager和WebDataStore实例
 export default async function server(options) {
@@ -26,6 +28,7 @@ export default async function server(options) {
   await fastify.register(websocketRoutes, { prefix: '/ws', options })
   await fastify.register(webRoutes, { prefix: '/web', options })
   await fastify.register(homeRoutes)
+  await fastify.register(clientRoutes, { prefix: '/client', options })
 
   // 返回Fastify实例
   return fastify

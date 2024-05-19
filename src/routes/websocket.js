@@ -13,7 +13,7 @@ export default async function websocketRoutes(fastify, options) {
       clientManager.addClient(socket, clientId)
   
       // 发送欢迎消息
-      socket.send(JSON.stringify({ type: 'msg', date: clientId, message: `Hello ${clientId}, this is the media server.` }))
+      socket.send(JSON.stringify({ type: 'msg', date: clientId, message: `Hello ${clientId}, this is the wormhole server.` }))
   
       // 处理接收到的消息
       socket.on('message', message => {

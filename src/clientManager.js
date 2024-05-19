@@ -8,6 +8,9 @@ export class ClientManager {
   
     // 添加新客户端
     addClient(client, id) {
+      client.GetCount = 0
+      client.PostCount = 0
+      client.LinkTime = Date.now()
       this.clients.set(id, client)
     }
   

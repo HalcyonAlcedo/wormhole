@@ -1,6 +1,7 @@
 // web.js
 // 处理HTTP Web请求的路由和逻辑
 import { parse } from 'path'
+import extHandle from '../extHandle.js'
 
 export default async function webRoutes(fastify, options) {
 
@@ -77,45 +78,8 @@ export default async function webRoutes(fastify, options) {
               const fileBuffer = webDataStore.getData(clientId, message.path)
               webDataStore.clearData(clientId, path)
               if (fileBuffer) {
-                let text = fileBuffer.toString('utf8')
-                switch (message.ext || pathObj.ext) {
-                  case '.woff':
-                    ret({ type: 'application/font-woff', data: fileBuffer, code: 200 })
-                    break
-                  case '.woff2':
-                    ret({ type: 'application/font-woff2', data: fileBuffer, code: 200 })
-                    break
-                  case '.jpg':
-                    ret({ type: 'image/jpeg', data: fileBuffer, code: 200 })
-                    break
-                  case '.jpeg':
-                    ret({ type: 'image/jpeg', data: fileBuffer, code: 200 })
-                    break
-                  case '.png':
-                    ret({ type: 'image/png', data: fileBuffer, code: 200 })
-                    break
-                  case '.bmp':
-                    ret({ type: 'image/bmp', data: fileBuffer, code: 200 })
-                    break
-                  case '.ico':
-                    ret({ type: 'image/ico', data: fileBuffer, code: 200 })
-                    break
-                  case '.webp':
-                    ret({ type: 'image/webp', data: fileBuffer, code: 200 })
-                    break
-                  case '.html':
-                    ret({ type: 'text/html', data: text, code: 200 })
-                    break
-                  case '.css':
-                    ret({ type: 'text/css', data: text, code: 200 })
-                    break
-                  case '.json':
-                    ret({ type: 'application/json', data: text, code: 200 })
-                    break
-                  default:
-                    ret({ type: 'text/plain', data: text, code: 200 })
-                    break
-                }
+                client.GetCount += 1
+                ret({ type: extHandle(message.ext || pathObj.ext), data: fileBuffer, code: 200 })
               } else {
                 ret({ type: 'text/html', data: 'Data not found', code: 404 })
               }
@@ -181,6 +145,7 @@ export default async function webRoutes(fastify, options) {
           }
           if (message.state === 'error') {
             webDataStore.clearData(clientId, path)
+            client.PostCount += 1
             ret({ type: 'application/json', data: message.error.message || message.error, code: message.error.status || 500 })
           }
         }
