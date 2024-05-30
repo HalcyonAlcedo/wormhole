@@ -33,23 +33,22 @@ export default async function webRoutes(fastify, options) {
 
     const client = clientManager.getClient(clientId)
     if (client) {
-      connection.send(JSON.stringify({ message: 'hello' }))
       client.on('message', messageHandler)
       connection.on('message', message => {
         const pathObj = parse(path)
         path = `${pathObj.dir}${pathObj.dir ? '/' : ''}${pathObj.base}`
         client.send(JSON.stringify({ type: 'ws', path, message: JSON.parse(message), query: queryParams, headers: headersParams, command: 'websocket' }))
-
       });
       // 处理连接关闭
       connection.on('close', () => {
+        client.send(JSON.stringify({ type: 'ws', path, query: queryParams, headers: headersParams, command: 'close' }))
         client.removeListener('message', messageHandler)
       })
       // 处理连接错误
       connection.on('error', error => {
+        client.send(JSON.stringify({ type: 'ws', path, query: queryParams, headers: headersParams, command: 'close' }))
         client.removeListener('message', messageHandler)
       })
-
     } else {
       connection.send(JSON.stringify({ type: 'error', message: 'Client not found' }))
       connection.close()
