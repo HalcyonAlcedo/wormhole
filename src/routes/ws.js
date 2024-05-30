@@ -39,6 +39,11 @@ export default async function webRoutes(fastify, options) {
         path = `${pathObj.dir}${pathObj.dir ? '/' : ''}${pathObj.base}`
         client.send(JSON.stringify({ type: 'ws', path, message: JSON.parse(message), query: queryParams, headers: headersParams, command: 'websocket' }))
       });
+      connection.on('open', () => {
+        const pathObj = parse(path)
+        path = `${pathObj.dir}${pathObj.dir ? '/' : ''}${pathObj.base}`
+        client.send(JSON.stringify({ type: 'ws', path, query: queryParams, headers: headersParams, command: 'link' }))
+      });
       // 处理连接关闭
       connection.on('close', () => {
         client.send(JSON.stringify({ type: 'ws', path, query: queryParams, headers: headersParams, command: 'close' }))
