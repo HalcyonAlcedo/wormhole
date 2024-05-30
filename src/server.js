@@ -6,6 +6,7 @@ import cors from '@fastify/cors'
 
 import websocketRoutes from './routes/websocket.js'
 import webRoutes from './routes/web.js'
+import wsRoutes from './routes/ws.js'
 import homeRoutes from './routes/home.js'
 import clientRoutes from './routes/client.js'
 
@@ -23,10 +24,11 @@ export default async function server(options) {
     origin: '*',
     methods: ['GET', 'POST']
   });
-  
+
   // 注册路由
   await fastify.register(websocketRoutes, { prefix: '/ws', options })
   await fastify.register(webRoutes, { prefix: '/web', options })
+  await fastify.register(wsRoutes, { prefix: '/websocket', options })
   await fastify.register(homeRoutes)
   await fastify.register(clientRoutes, { prefix: '/client', options })
 
