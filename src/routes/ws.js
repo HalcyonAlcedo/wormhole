@@ -1,5 +1,6 @@
 // web.js
 // 处理HTTP Web请求的路由和逻辑
+import { error } from 'console'
 import { parse } from 'path'
 
 export default async function webRoutes(fastify, options) {
@@ -27,13 +28,20 @@ export default async function webRoutes(fastify, options) {
           connection.send(JSON.stringify(message.data))
         } else if (message.state === 'error') {
           connection.send(JSON.stringify(message.error || message.data))
+          connection.close()
         }
       }
+    }
+    const closeHandler = error => {
+      connection.send(JSON.stringify({message: 'close'}))
+      connection.close()
     }
 
     const client = clientManager.getClient(clientId)
     if (client) {
       client.on('message', messageHandler)
+      client.on('close', closeHandler)
+      client.on('error', closeHandler)
       connection.on('message', message => {
         const pathObj = parse(path)
         path = `${pathObj.dir}${pathObj.dir ? '/' : ''}${pathObj.base}`
@@ -48,11 +56,15 @@ export default async function webRoutes(fastify, options) {
       connection.on('close', () => {
         client.send(JSON.stringify({ type: 'ws', path, query: queryParams, headers: headersParams, command: 'close' }))
         client.removeListener('message', messageHandler)
+        client.removeListener('close', closeHandler)
+        client.removeListener('error', closeHandler)
       })
       // 处理连接错误
       connection.on('error', error => {
         client.send(JSON.stringify({ type: 'ws', path, query: queryParams, headers: headersParams, command: 'close' }))
         client.removeListener('message', messageHandler)
+        client.removeListener('close', closeHandler)
+        client.removeListener('error', closeHandler)
       })
     } else {
       connection.send(JSON.stringify({ type: 'error', message: 'Client not found' }))
