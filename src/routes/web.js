@@ -1,6 +1,7 @@
 // web.js
 // 处理HTTP Web请求的路由和逻辑
 import { parse } from 'path'
+import crypto from 'crypto'
 import extHandle from '../extHandle.js'
 
 export default async function webRoutes(fastify, options) {
@@ -54,12 +55,13 @@ export default async function webRoutes(fastify, options) {
   // 定义waitForWsResponse函数来处理WebSocket响应
   async function getWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams, headersParams) {
     const pathObj = parse(path)
+    const echo = crypto.randomUUID()
     path = `${pathObj.dir}${pathObj.dir ? '/' : ''}${pathObj.base}`
     return new Promise((resolve, reject) => {
       const client = clientManager.getClient(clientId)
       if (client) {
         webDataStore.initDataStore(clientId)
-        client.send(JSON.stringify({ type: 'web', path, query: queryParams, headers: headersParams, command: 'get' }))
+        client.send(JSON.stringify({ type: 'web', path, query: queryParams, headers: headersParams, command: 'get', echo }))
         // 设置事件监听器来处理WebSocket客户端返回的消息
         const messageHandler = message => {
           const ret = data => {
@@ -69,8 +71,10 @@ export default async function webRoutes(fastify, options) {
           try {
             message = JSON.parse(message)
           } catch (error) {
-            webDataStore.clearData(clientId, path)
-            ret({ type: 'text/html', data: `非法消息${message}`, code: 403 })
+            return
+          }
+          if (message.echo && message.echo !== echo) {
+            return
           }
           if (message.type === 'web' && message.path === path && message.command === 'resource') {
             if (message.state === 'complete') {
@@ -113,12 +117,13 @@ export default async function webRoutes(fastify, options) {
   }
   async function postWaitForWsResponse(clientManager, webDataStore, clientId, path, queryParams, bodyParams, headersParams) {
     const pathObj = parse(path)
+    const echo = crypto.randomUUID()
     path = `${pathObj.dir}${pathObj.dir ? '/' : ''}${pathObj.base}`
     return new Promise((resolve, reject) => {
       const client = clientManager.getClient(clientId)
       if (client) {
         webDataStore.initDataStore(clientId)
-        client.send(JSON.stringify({ type: 'web', path, query: queryParams, body: bodyParams, headers: headersParams, command: 'post' }))
+        client.send(JSON.stringify({ type: 'web', path, query: queryParams, body: bodyParams, headers: headersParams, command: 'post', echo }))
         // 设置事件监听器来处理WebSocket客户端返回的消息
         const messageHandler = message => {
           const ret = data => {
@@ -128,8 +133,10 @@ export default async function webRoutes(fastify, options) {
           try {
             message = JSON.parse(message)
           } catch (error) {
-            webDataStore.clearData(clientId, path)
-            ret({ type: 'text/html', data: `非法消息${message}`, code: 403 })
+            return
+          }
+          if (message.echo && message.echo !== echo) {
+            return
           }
           if (message.type === 'web' && message.path === path && message.data != undefined && message.command === 'postapi') {
             if (message.state === 'complete') {

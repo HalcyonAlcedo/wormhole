@@ -1,6 +1,5 @@
 // web.js
 // 处理HTTP Web请求的路由和逻辑
-import { error } from 'console'
 import { parse } from 'path'
 
 export default async function webRoutes(fastify, options) {
